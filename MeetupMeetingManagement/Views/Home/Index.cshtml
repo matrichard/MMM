@@ -1,14 +1,39 @@
 ﻿<div ng-controller="MemberListCtrl as ctrl">
 	<div class="row">
 		<div class="col-md-4">
-			<table>
+			<table st-table="ctrl.memberList" class="table table-striped">
 				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
+					<th>
+						<input st-search="'name'" placeholder="search for firstname" class="input-sm form-control" type="search" />
+					</th>
 				</tr>
-				<tr ng-repeat="member in ctrl.memberList">
-					<td>{{member.fName}}</td>
-					<td>{{member.lName}}</td>
+				<tr ng-repeat="member in ctrl.memberList" ng-switch="member.membership.status">
+					<td>{{member.name}}</td>
+					<td ng-switch-when="current">
+						<span data-toggle="tooltip" data-placement="top" title="expires: {{member.membership.expiration}}">
+							<i class="fa fa-check-circle text-success fa-2x"></i>
+						</span>
+					</td>
+					<td ng-switch-when="expired">
+						<span data-toggle="tooltip" data-placement="top" title="expires: {{member.membership.expiration}}">
+							<i class="fa fa-exclamation-triangle text-danger fa-2x"></i>
+						</span>
+					</td>
+					<td ng-switch-when="due">
+						<span class="fa-stack fa-lg" data-toggle="tooltip" data-placement="top" title="expires: {{member.membership.expiration}}">
+							<i class="fa fa-circle fa-stack-2x text-warning"></i>
+							<i class="fa fa-flag fa-stack-1x fa-inverse"></i>
+						</span>
+					</td>
+					<td ng-switch-default>
+						<span class="fa-stack fa-lg" title="No membership record">
+							<i class="fa fa-circle fa-stack-2x text-danger"></i>
+							<i class="fa fa-times fa-stack-1x fa-inverse"></i>
+						</span>
+					</td>
+					<td>
+						<img ng-src="{{member.picture}}"/>
+					</td>
 				</tr>
 			</table>
 		</div>
