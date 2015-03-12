@@ -15,12 +15,12 @@
 						</span>
 					</td>
 					<td ng-switch-when="expired">
-						<span data-toggle="tooltip" data-placement="top" title="expires: {{member.membership.expiration}}">
+						<span data-toggle="tooltip" data-placement="top" title="expired since {{member.membership.expiration}}">
 							<i class="fa fa-exclamation-triangle text-danger fa-2x"></i>
 						</span>
 					</td>
 					<td ng-switch-when="due">
-						<span class="fa-stack fa-lg" data-toggle="tooltip" data-placement="top" title="expires: {{member.membership.expiration}}">
+						<span class="fa-stack fa-lg" data-toggle="tooltip" data-placement="top" title="expires SOON on  {{member.membership.expiration}}">
 							<i class="fa fa-circle fa-stack-2x text-warning"></i>
 							<i class="fa fa-flag fa-stack-1x fa-inverse"></i>
 						</span>
