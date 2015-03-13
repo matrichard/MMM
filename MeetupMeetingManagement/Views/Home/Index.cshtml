@@ -1,41 +1,36 @@
 ﻿<div ng-controller="MemberListCtrl as ctrl">
 	<div class="row">
 		<div class="col-md-4">
-			<table st-table="ctrl.memberList" class="table table-striped">
-				<tr>
-					<th>
-						<input st-search="'name'" placeholder="search for firstname" class="input-sm form-control" type="search" />
-					</th>
-				</tr>
-				<tr ng-repeat="member in ctrl.memberList" ng-switch="member.membership.status">
-					<td>{{member.name}}</td>
-					<td ng-switch-when="current">
-						<span data-toggle="tooltip" data-placement="top" title="expires: {{member.membership.expiration}}">
-							<i class="fa fa-check-circle text-success fa-2x"></i>
-						</span>
-					</td>
-					<td ng-switch-when="expired">
-						<span data-toggle="tooltip" data-placement="top" title="expired since {{member.membership.expiration}}">
-							<i class="fa fa-exclamation-triangle text-danger fa-2x"></i>
-						</span>
-					</td>
-					<td ng-switch-when="due">
-						<span class="fa-stack fa-lg" data-toggle="tooltip" data-placement="top" title="expires SOON on  {{member.membership.expiration}}">
-							<i class="fa fa-circle fa-stack-2x text-warning"></i>
-							<i class="fa fa-flag fa-stack-1x fa-inverse"></i>
-						</span>
-					</td>
-					<td ng-switch-default>
-						<span class="fa-stack fa-lg" title="No membership record">
-							<i class="fa fa-circle fa-stack-2x text-danger"></i>
-							<i class="fa fa-times fa-stack-1x fa-inverse"></i>
-						</span>
-					</td>
-					<td>
-						<img ng-src="{{member.picture}}"/>
-					</td>
-				</tr>
-			</table>
+			<input type="text" placeholder="Member name" ng-model="ctrl.selectedMember"
+				   typeahead="member as member.name for member in ctrl.memberList | filter:{name:$viewValue} | limitTo:8"
+				   typeahead-template-url=" customTemplate.html" class="form-control" ng-disabled="ctrl.isReadOnly">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<pre>Selected: {{ctrl.selectedMember | json}}</pre>
 		</div>
 	</div>
 </div>
+<script type="text/ng-template" id="customTemplate.html">
+	<a>
+		<img ng-src="{{match.model.picture}}" width="50">
+		<span ng-switch="match.model.membership.status">
+			<span ng-switch-when="Current" data-toggle="tooltip" data-placement="top" title="expires: {{match.model.membership.expirationDate | date: mediumDate}}">
+				<i class="fa fa-check-circle text-success"></i>
+			</span>
+			<span ng-switch-when="Expired" data-toggle="tooltip" data-placement="top" title="expired since {{match.model.membership.expirationDate | date: mediumDate}}">
+				<i class="fa fa-exclamation-triangle text-danger"></i>
+			</span>
+			<span ng-switch-when="Due" class="fa-stack" data-toggle="tooltip" data-placement="top" title="expires SOON on  {{match.model.membership.expirationDate | date: mediumDate}}">
+				<i class="fa fa-circle fa-stack-1x text-warning"></i>
+				<i class="fa fa-flag fa-stack-1x fa-inverse"></i>
+			</span>
+			<span ng-switch-default class="fa-stack" title="No membership record">
+				<i class="fa fa-circle fa-stack-1x text-danger"></i>
+				<i class="fa fa-times fa-stack-1x fa-inverse"></i>
+			</span>
+		</span>
+		<span bind-html-unsafe="match.model.name | typeaheadHighlight:query"></span>
+	</a>
+</script>
