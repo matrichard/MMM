@@ -130,7 +130,7 @@ namespace MeetupMeetingManagement.Controllers
                 var jsonContent = await GetResponseContent(response);
                 Events.AddRange(
                     JsonConvert.DeserializeObject<MeetupResponse<EventsDto>>(jsonContent)
-                        .Results.Select(x => new Event {Name = x.Name, Url = x.Url, Id = x.Id}));
+                        .Results.Select(x => new Event {Name = x.Name, Url = x.Url, Id = x.Id, EpochTime = x.Epochtime}));
                 foreach (var e in Events)
                 {
                     var res = await client.GetAsync(string.Format("2/rsvps?&sign=true&event_id={0}&key={1}", e.Id, ApiKey));
@@ -260,6 +260,8 @@ namespace MeetupMeetingManagement.Controllers
 
         public IEnumerable<dynamic> Rsvps { get; set; }
         public string Id { get; set; }
+
+        public string EpochTime { get; set; }
     }
 
     #endregion
@@ -306,7 +308,10 @@ namespace MeetupMeetingManagement.Controllers
         public string Url { get; set; }
 
         [JsonProperty("name")]
-        public string Name { get; set; } 
+        public string Name { get; set; }
+
+        [JsonProperty("time")]
+        public string Epochtime { get; set; }
     }
 
     public class RsvpDto

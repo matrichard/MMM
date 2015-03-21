@@ -17,7 +17,7 @@
 			<img ng-src="{{ctrl.selectedMember.picture}}" alt="{{ctrl.selectedMember.name}}" />
 		</div>
 		<div class="col-lg-3">
-			<p>Name:<a href="http://www.meetup.com/msdevmtl/members/{{ctrl.selectedMember.id}}">{{ctrl.selectedMember.name}}&nbsp;<i class="fa fa-external-link"></i></a>
+			<p>Name:<a target="_blank" href="http://www.meetup.com/msdevmtl/members/{{ctrl.selectedMember.id}}">{{ctrl.selectedMember.name}}&nbsp;<i class="fa fa-external-link"></i></a>
 			</p>
 			<p>Status: <strong>{{ctrl.selectedMember.membership.status}}</strong>
 			</p>
@@ -29,7 +29,11 @@
 		<div class="col-lg-8">
 			<div ng-repeat="event in ctrl.events">
 				<ul>
-					<li>{{event.name}}: <span class="text-uppercase"><strong>{{event.rsvpStatus}}</strong></span></li>
+					<li>
+						{{event.name}}<a href="{{event.url}}" target="_blank">&nbsp;<i class="fa fa-external-link"></i></a>:
+						<span class="text-uppercase"><strong>{{event.rsvpStatus}}</strong></span>
+						<p class="text-muted">{{event.epochTime | date:'medium'}}</p>
+					</li>
 				</ul>
 			</div>
 		</div>
