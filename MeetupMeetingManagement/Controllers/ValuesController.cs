@@ -171,6 +171,8 @@ namespace MeetupMeetingManagement.Controllers
 
         public string Picture { get; private set; }
 
+        public string Url { get; private set; }
+
         public Membership Membership { get; internal set; }
 
         public static Member Create(ProfilesDto dto)
@@ -179,6 +181,7 @@ namespace MeetupMeetingManagement.Controllers
             {
                 Id = dto.Id,
                 Name = dto.Name,
+                Url = dto.Url,
                 Searchable = RemoveDiacritics(dto.Name)
             };
 
@@ -294,6 +297,9 @@ namespace MeetupMeetingManagement.Controllers
 
         [JsonProperty("photo")]
         public IDictionary<string,string> Picture { get; set; }
+
+        [JsonProperty("profile_url")]
+        public string Url { get; set; }
 
         [JsonProperty("membership_dues")]
         public IDictionary<string,string> MembershipDues { get; set; }
