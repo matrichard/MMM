@@ -2,35 +2,57 @@
 	<div class="row">
 		<div class="col-md-4">
 			<input type="text" placeholder="Member name" ng-model="ctrl.selectedMember"
-				   typeahead="member as member.name for member in ctrl.memberList | filter:{name:$viewValue} | limitTo:8"
-				   typeahead-template-url=" customTemplate.html" class="form-control" ng-disabled="ctrl.isReadOnly">
+				   typeahead-on-select="ctrl.onSelect($item, $model, $label)"
+				   typeahead="member as member.name for member in ctrl.memberList | filter:{searchable:$viewValue} | limitTo:8"
+				   typeahead-template-url="customTemplate.html" class="form-control" ng-disabled="ctrl.isReadOnly">
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-md-12">
+		@*<div class="col-md-12">
 			<pre>Selected: {{ctrl.selectedMember | json}}</pre>
+		</div>*@
+	</div>
+	<div class="row well" ng-show="ctrl.isSelected">
+		<div class="col-lg-1">
+			<img ng-src="{{ctrl.selectedMember.picture}}" alt="{{ctrl.selectedMember.name}}" />
+		</div>
+		<div class="col-lg-3">
+			<p>Name:<a href="http://www.meetup.com/msdevmtl/members/{{ctrl.selectedMember.id}}">{{ctrl.selectedMember.name}}&nbsp;<i class="fa fa-external-link"></i></a>
+			</p>
+			<p>Status: <strong>{{ctrl.selectedMember.membership.status}}</strong>
+			</p>
+			<p>Expiration Date: <strong>{{ctrl.selectedMember.membership.expirationDate | date: mediumDate}}</strong>
+			</p>
+			<p>Last Transaction Date:<strong> {{ctrl.selectedMember.membership.transactionDate| date: mediumDate}}</strong>
+			</p>
+		</div>
+		<div class="col-lg-8">
+			<div ng-repeat="event in ctrl.events">
+				<ul>
+					<li>{{event.name}}: <span class="text-uppercase"><strong>{{event.rsvpStatus}}</strong></span></li>
+				</ul>
+			</div>
 		</div>
 	</div>
 </div>
 <script type="text/ng-template" id="customTemplate.html">
 	<a>
 		<img ng-src="{{match.model.picture}}" width="50">
+		<span bind-html-unsafe="match.model.name | typeaheadHighlight:query"></span>
 		<span ng-switch="match.model.membership.status">
 			<span ng-switch-when="Current" data-toggle="tooltip" data-placement="top" title="expires: {{match.model.membership.expirationDate | date: mediumDate}}">
 				<i class="fa fa-check-circle text-success"></i>
 			</span>
-			<span ng-switch-when="Expired" data-toggle="tooltip" data-placement="top" title="expired since {{match.model.membership.expirationDate | date: mediumDate}}">
-				<i class="fa fa-exclamation-triangle text-danger"></i>
+			<span ng-switch-when="Expired" class="fa-stack" data-toggle="tooltip" data-placement="top" title="expired since {{match.model.membership.expirationDate | date: mediumDate}}">
+				<i class="fa fa-circle fa-stack-1x text-danger"></i>
+				<i class="fa fa-times fa-stack-1x fa-inverse"></i>
 			</span>
 			<span ng-switch-when="Due" class="fa-stack" data-toggle="tooltip" data-placement="top" title="expires SOON on  {{match.model.membership.expirationDate | date: mediumDate}}">
 				<i class="fa fa-circle fa-stack-1x text-warning"></i>
 				<i class="fa fa-flag fa-stack-1x fa-inverse"></i>
 			</span>
-			<span ng-switch-default class="fa-stack" title="No membership record">
-				<i class="fa fa-circle fa-stack-1x text-danger"></i>
-				<i class="fa fa-times fa-stack-1x fa-inverse"></i>
+			<span ng-switch-default title="No membership record">
 			</span>
 		</span>
-		<span bind-html-unsafe="match.model.name | typeaheadHighlight:query"></span>
 	</a>
 </script>

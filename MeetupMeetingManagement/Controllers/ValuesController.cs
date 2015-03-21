@@ -3,10 +3,12 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -45,21 +47,32 @@ namespace MeetupMeetingManagement.Controllers
     public class MembersController : ApiController
     {
         private static string ApiKey = System.Configuration.ConfigurationManager.AppSettings["apiKey"];
+        private static List<dynamic> Members = new List<dynamic>();
+
         private HttpClient client = new HttpClient() { BaseAddress = new Uri(@"https://api.meetup.com/", UriKind.Absolute) };
+
         public async Task<IHttpActionResult> Get()
         {
-            var group = await LoadGroup();
-            var members = new List<dynamic>();
-            var groups = group.Members / 200;
-            var tasks = new Task<IEnumerable<dynamic>>[groups];
-            for (int i = 0; i <= groups; i++)
+            if (Members.Any())
             {
-                await LoadMembers(i).ContinueWith(coll => members.AddRange(coll.Result));
+                return Ok(Members);
             }
 
-            return Ok(members);
+            var group = await LoadGroup();
+            var groups = @group.Members / 200;
+            for (var i = 0; i <= groups; i++)
+            {
+                await LoadMembers(i).ContinueWith(coll => Members.AddRange(coll.Result));
+            }
+
+            return Ok(Members);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            client.Dispose();
+            base.Dispose(disposing);
+        }
         private async Task<GroupDto> LoadGroup()
         {
             var response = await client.GetAsync("2/groups?&sign=true&photo-host=public&group_urlname=msdevmtl&key=" + ApiKey);
@@ -98,6 +111,58 @@ namespace MeetupMeetingManagement.Controllers
         }
     }
 
+    public class EventsController : ApiController
+    {
+        private static string ApiKey = System.Configuration.ConfigurationManager.AppSettings["apiKey"];
+        private static List<Event> Events = new List<Event>();
+        private HttpClient client = new HttpClient() { BaseAddress = new Uri(@"https://api.meetup.com/", UriKind.Absolute) };
+
+        public async Task<IHttpActionResult> Get()
+        {
+            if (Events.Any())
+            {
+                return Ok(Events);
+            }
+
+            var response = await client.GetAsync(string.Format("2/events?&sign=true&photo-host=public&group_urlname=msdevmtl&page=5&key={0}", ApiKey));
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonContent = await GetResponseContent(response);
+                Events.AddRange(
+                    JsonConvert.DeserializeObject<MeetupResponse<EventsDto>>(jsonContent)
+                        .Results.Select(x => new Event {Name = x.Name, Url = x.Url, Id = x.Id}));
+                foreach (var e in Events)
+                {
+                    var res = await client.GetAsync(string.Format("2/rsvps?&sign=true&event_id={0}&key={1}", e.Id, ApiKey));
+                    if (res.IsSuccessStatusCode)
+                    {
+                        var jContent = await GetResponseContent(res);
+                        e.Rsvps = JsonConvert.DeserializeObject<MeetupResponse<RsvpDto>>(jContent).Results.Select(x => new {x.Status, MemberId = x.Member["member_id"]});
+                    }
+                }
+            }
+
+            return Ok(Events);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            client.Dispose();
+            base.Dispose(disposing);
+        }
+
+        private async Task<string> GetResponseContent(HttpResponseMessage response)
+        {
+            string jsonContent;
+            using (var responseStream = await response.Content.ReadAsStreamAsync())
+            {
+                jsonContent = new StreamReader(responseStream).ReadToEnd();
+            }
+
+            return jsonContent;
+        }
+    }
+
     #region Models
     public class Member
     {
@@ -113,7 +178,8 @@ namespace MeetupMeetingManagement.Controllers
             var member = new Member
             {
                 Id = dto.Id,
-                Name = dto.Name
+                Name = dto.Name,
+                Searchable = RemoveDiacritics(dto.Name)
             };
 
             string thumbnail;
@@ -124,6 +190,17 @@ namespace MeetupMeetingManagement.Controllers
             member.Picture = thumbnail;
             member.Membership = Membership.Create(dto.MembershipDues);
             return member;
+        }
+
+        public string Searchable { get; private set; }
+
+        private static string RemoveDiacritics(string text)
+        {
+            return string.Concat(
+                text.Normalize(NormalizationForm.FormD)
+                .Where(ch => CharUnicodeInfo.GetUnicodeCategory(ch) !=
+                                              UnicodeCategory.NonSpacingMark)
+              ).Normalize(NormalizationForm.FormC);
         }
     }
 
@@ -175,6 +252,16 @@ namespace MeetupMeetingManagement.Controllers
         }
     }
 
+    public class Event
+    {
+        public string Name { get; set; }
+
+        public string Url { get; set; }
+
+        public IEnumerable<dynamic> Rsvps { get; set; }
+        public string Id { get; set; }
+    }
+
     #endregion
 
     #region DTOs
@@ -210,10 +297,33 @@ namespace MeetupMeetingManagement.Controllers
         public IDictionary<string,string> MembershipDues { get; set; }
     }
 
+    public class EventsDto
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("event_url")]
+        public string Url { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; } 
+    }
+
+    public class RsvpDto
+    {
+        [JsonProperty("response")]
+        public string Status { get; set; }
+        [JsonProperty("member")]
+        public IDictionary<string, string> Member { get; set; } 
+    }
+
     public class MeetupResponse<T>
     {
         [JsonProperty("results")]
         public IList<T> Results { get; set; }
+
+        [JsonProperty("meta")]
+        public IDictionary<string, string> Meta { get; set; } 
     }
     #endregion
 }
