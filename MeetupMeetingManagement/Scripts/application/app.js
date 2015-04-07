@@ -1,6 +1,6 @@
 ﻿(function (angular) {
 	"use strict";
-	angular.module('myApp', ["ui.bootstrap", 'smart-table']);
+	angular.module('myApp', ["ui.bootstrap","ngStorage"]);
 })(window.angular);
 
 //MemberListCtrl
@@ -40,9 +40,26 @@
 
 //Member Service
 (function (angular) {
-	angular.module('myApp').service('memberSrv', function($http) {
+	angular.module('myApp').service('memberSrv', function ($http, $q, $localStorage) {
+		function loadFromSite() {
+			var deferred = $q.defer();
+
+			$http.get("/api/members").then(function (result) {
+				$localStorage.members = result;
+				deferred.resolve(result);
+			}).catch(function (error) {
+				deferred.reject(error);
+			});
+
+			return deferred.promise;
+		}
+
 		function loadMembers() {
-			return $http.get("/api/members");
+			if ($localStorage.members) {
+				return $q.when($localStorage.members);
+			} else {
+				return loadFromSite();
+			}
 		};
 
 		return {
@@ -53,9 +70,25 @@
 
 //Events Service
 (function (angular) {
-	angular.module('myApp').service('eventSrv', function ($http) {
+	angular.module('myApp').service('eventSrv', function ($http, $q, $localStorage) {
+		function loadFromSite() {
+			var deferred = $q.defer();
+			$http.get("/api/events").then(function (result) {
+				$localStorage.events = result;
+				deferred.resolve(result);
+			}).catch(function(error) {
+				deferred.reject(error);
+			});
+			return deferred.promise;
+		}
+
 		function loadEvents() {
-			return $http.get("/api/events");
+			var events = $localStorage.events;
+			if (events) {
+				return $q.when(events);
+			} else {
+				return loadFromSite();
+			}
 		};
 
 		return {
