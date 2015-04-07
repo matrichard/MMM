@@ -19,3 +19,8 @@ textarea {
 [ng-cloak] {
 			display: none !important;
 		}
+
+.half-rule {
+  width: 100px;
+  margin: 40px auto;
+}

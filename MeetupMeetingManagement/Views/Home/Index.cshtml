@@ -1,40 +1,45 @@
 ﻿<div ng-controller="MemberListCtrl as ctrl">
+	<div class="half-rule"></div>
 	<div class="row">
-		<div class="col-md-4">
-			<input type="text" placeholder="Member name" ng-model="ctrl.selectedMember"
-				   typeahead-on-select="ctrl.onSelect($item, $model, $label)"
-				   typeahead="member as member.name for member in ctrl.memberList | filter:{searchable:$viewValue} | limitTo:8"
-				   typeahead-template-url="customTemplate.html" class="form-control" ng-disabled="ctrl.isReadOnly">
+		<div class="container well">
+			<div class="col-md-12">
+				<input type="text" placeholder="Member name" ng-model="ctrl.selectedMember"
+				       typeahead-on-select="ctrl.onSelect($item, $model, $label)"
+				       typeahead="member as member.name for member in ctrl.memberList | filter:{searchable:$viewValue} | limitTo:8"
+				       typeahead-template-url="customTemplate.html" class="form-control" ng-disabled="ctrl.isReadOnly">
+			</div>
 		</div>
 	</div>
-	<div class="row">
-		@*<div class="col-md-12">
-			<pre>Selected: {{ctrl.selectedMember | json}}</pre>
-		</div>*@
-	</div>
-	<div class="row well" ng-show="ctrl.isSelected">
-		<div class="col-lg-1">
-			<img ng-src="{{ctrl.selectedMember.picture}}" alt="{{ctrl.selectedMember.name}}" />
-		</div>
-		<div class="col-lg-3">
-			<p>Name:<a target="_blank" href="{{ctrl.selectedMember.url}}">{{ctrl.selectedMember.name}}&nbsp;<i class="fa fa-external-link"></i></a>
-			</p>
-			<p>Status: <strong>{{ctrl.selectedMember.membership.status}}</strong>
-			</p>
-			<p>Expiration Date: <strong>{{ctrl.selectedMember.membership.expirationDate | date: mediumDate}}</strong>
-			</p>
-			<p>Last Transaction Date:<strong> {{ctrl.selectedMember.membership.transactionDate| date: mediumDate}}</strong>
-			</p>
-		</div>
-		<div class="col-lg-8">
-			<div ng-repeat="event in ctrl.events">
-				<ul>
-					<li>
-						{{event.name}}<a href="{{event.url}}" target="_blank">&nbsp;<i class="fa fa-external-link"></i></a>:
-						<span class="text-uppercase"><strong>{{event.rsvpStatus}}</strong></span>
-						<p class="text-muted">{{event.epochTime | date:'medium'}}</p>
-					</li>
-				</ul>
+	<div class="half-rule"></div>
+	<div class="row" ng-show="ctrl.isSelected">
+		<div class="container jumbotron">
+			<div class="col-md-1">
+				<img ng-src="{{ctrl.selectedMember.picture}}" alt="{{ctrl.selectedMember.name}}"/>
+			</div>
+			<div class="col-md-3">
+				<p>
+					Name:<a target="_blank" href="{{ctrl.selectedMember.url}}">{{ctrl.selectedMember.name}}&nbsp;<i class="fa fa-external-link"></i></a>
+				</p>
+				<p>
+					Status: <strong>{{ctrl.selectedMember.membership.status}}</strong>
+				</p>
+				<p>
+					Expiration Date: <strong>{{ctrl.selectedMember.membership.expirationDate | date: mediumDate}}</strong>
+				</p>
+				<p>
+					Last Transaction Date:<strong> {{ctrl.selectedMember.membership.transactionDate| date: mediumDate}}</strong>
+				</p>
+			</div>
+			<div class="col-md-8">
+				<div ng-repeat="event in ctrl.events">
+					<ul>
+						<li>
+							{{event.name}}<a href="{{event.url}}" target="_blank">&nbsp;<i class="fa fa-external-link"></i></a>:
+							<span class="text-uppercase"><strong>{{event.rsvpStatus}}</strong></span>
+							<p class="text-muted">{{event.epochTime | date:'medium'}}</p>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>

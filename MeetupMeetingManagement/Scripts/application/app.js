@@ -42,7 +42,7 @@
 (function (angular) {
 	angular.module('myApp').service('memberSrv', function($http) {
 		function loadMembers() {
-			return $http.get("api/members");
+			return $http.get("/api/members");
 		};
 
 		return {
@@ -55,7 +55,7 @@
 (function (angular) {
 	angular.module('myApp').service('eventSrv', function ($http) {
 		function loadEvents() {
-			return $http.get("api/events");
+			return $http.get("/api/events");
 		};
 
 		return {
