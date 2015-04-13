@@ -1,4 +1,4 @@
-﻿<div ng-show="vm.user.isAuthenticated">
+﻿<div ng-show="ctrl.user.isAuthenticated">
 	<div class="half-rule"></div>
 	<div class="row">
 		<div class="container well">
@@ -6,7 +6,8 @@
 				<input type="text" placeholder="Member name" ng-model="ctrl.selectedMember"
 				       typeahead-on-select="ctrl.onSelect($item, $model, $label)"
 				       typeahead="member as member.name for member in ctrl.memberList | filter:{searchable:$viewValue} | limitTo:8"
-				       typeahead-template-url="customTemplate.html" class="form-control" ng-disabled="ctrl.isReadOnly">
+				       typeahead-template-url="customTemplate.html" ng-disabled="ctrl.isReadOnly">
+				<button class="btn btn-default btn-sm" ng-click="ctrl.refreshData()">REFRESH DATA</button>
 			</div>
 		</div>
 	</div>
@@ -14,7 +15,7 @@
 	<div class="row" ng-show="ctrl.isSelected">
 		<div class="container jumbotron">
 			<div class="col-md-1">
-				<img ng-src="{{ctrl.selectedMember.picture}}" alt="{{ctrl.selectedMember.name}}"/>
+				<img ng-src="{{ctrl.selectedMember.picture}}" alt="{{ctrl.selectedMember.name}}" />
 			</div>
 			<div class="col-md-3">
 				<p>
@@ -34,9 +35,11 @@
 				<div ng-repeat="event in ctrl.events">
 					<ul>
 						<li>
-							{{event.name}}<a href="{{event.url}}" target="_blank">&nbsp;<i class="fa fa-external-link"></i></a>:
-							<span class="text-uppercase"><strong>{{event.rsvpStatus}}</strong></span>
-							<p class="text-muted">{{event.epochTime | date:'medium'}}</p>
+							<p>
+								{{event.name}}<a href="{{event.url}}" target="_blank">&nbsp;<i class="fa fa-external-link"></i></a>:
+								<span class="text-uppercase"><strong>{{event.rsvpStatus}}</strong></span> - <span class="text-muted">{{event.epochTime | date:'medium'}}</span>
+							</p>
+							
 						</li>
 					</ul>
 				</div>

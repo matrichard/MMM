@@ -44,6 +44,7 @@ namespace MeetupMeetingManagement.Controllers
         }
     }
 
+    [Authorize]
     public class MembersController : ApiController
     {
         private static string ApiKey = System.Configuration.ConfigurationManager.AppSettings["apiKey"];
@@ -67,6 +68,23 @@ namespace MeetupMeetingManagement.Controllers
 
             return Ok(Members);
         }
+
+        [HttpGet]
+        [Route("api/members/refresh")]
+        public async Task<IHttpActionResult> Refresh()
+        {
+            Members.Clear();
+
+            var group = await LoadGroup();
+            var groups = @group.Members / 200;
+            for (var i = 0; i <= groups; i++)
+            {
+                await LoadMembers(i).ContinueWith(coll => Members.AddRange(coll.Result));
+            }
+
+            return Ok(Members);
+        }
+
 
         protected override void Dispose(bool disposing)
         {
@@ -111,6 +129,7 @@ namespace MeetupMeetingManagement.Controllers
         }
     }
 
+    [Authorize]
     public class EventsController : ApiController
     {
         private static string ApiKey = System.Configuration.ConfigurationManager.AppSettings["apiKey"];
@@ -144,6 +163,33 @@ namespace MeetupMeetingManagement.Controllers
 
             return Ok(Events);
         }
+
+        [HttpGet]
+        [Route("api/events/refresh")]
+        public async Task<IHttpActionResult> Refresh()
+        {
+            Events.Clear();
+
+            var response = await client.GetAsync(string.Format("2/events?&sign=true&photo-host=public&group_urlname=msdevmtl&page=5&key={0}", ApiKey));
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonContent = await GetResponseContent(response);
+                Events.AddRange(
+                    JsonConvert.DeserializeObject<MeetupResponse<EventsDto>>(jsonContent)
+                        .Results.Select(x => new Event { Name = x.Name, Url = x.Url, Id = x.Id, EpochTime = x.Epochtime }));
+                foreach (var e in Events)
+                {
+                    var res = await client.GetAsync(string.Format("2/rsvps?&sign=true&event_id={0}&key={1}", e.Id, ApiKey));
+                    if (res.IsSuccessStatusCode)
+                    {
+                        var jContent = await GetResponseContent(res);
+                        e.Rsvps = JsonConvert.DeserializeObject<MeetupResponse<RsvpDto>>(jContent).Results.Select(x => new { x.Status, MemberId = x.Member["member_id"] });
+                    }
+                }
+            }
+
+            return Ok(Events);
+        } 
 
         protected override void Dispose(bool disposing)
         {
