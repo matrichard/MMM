@@ -39,7 +39,7 @@
 					vm.isReadOnly = false;
 				});
 
-				eventSrv.loadEvents().then(function (result) {
+				eventSrv.loadEvents(vm.user.token).then(function (result) {
 					vm.events = result;
 				});
 			});
