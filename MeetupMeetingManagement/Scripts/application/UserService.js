@@ -54,9 +54,17 @@
 				});
 		}
 
+		var logout = function(user) {
+			delete $localStorage.user;
+			user.isAuthenticated = false;
+			user.token = "";
+			user.username = "";
+		}
+
 		return {
 			loadUser: loadUser,
-			authenticate: authenticate
+			authenticate: authenticate,
+			logout: logout
 		}
 	});
 })(window.angular);

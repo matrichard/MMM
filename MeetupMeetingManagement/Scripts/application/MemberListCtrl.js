@@ -40,6 +40,10 @@
 			});
 		}
 
+		vm.logout = function() {
+			userSrv.logout(vm.user);
+		}
+
 		vm.onSelect = function ($item, $model, $label) {
 			vm.isSelected = true;
 			angular.forEach(vm.events, function (e, key) {
