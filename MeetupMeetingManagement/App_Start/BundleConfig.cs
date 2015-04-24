@@ -19,14 +19,20 @@ namespace MeetupMeetingManagement
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/app").Include(
-                      "~/Scripts/application/app.js",
-                      "~/Scripts/application/*Service.js",
-                      "~/Scripts/application/MemberListCtrl.js"));
-
+            var paths = new[]
+            {
+                "~/Scripts/application/app.js",
+                "~/Scripts/application/*Service.js",
+                "~/Scripts/application/MemberListCtrl.js"
+            };
+#if DEBUG
+            bundles.Add(new ScriptBundle("~/bundles/app").Include(paths));
+#else
+            bundles.Add(new Bundle("~/bundles/app").Include(paths));
+#endif
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/site.css"));
+
         }
     }
 }
