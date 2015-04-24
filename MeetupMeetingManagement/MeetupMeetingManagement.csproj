@@ -135,7 +135,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -170,11 +169,24 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Auth\CustomJwtFormat.cs" />
+    <Compile Include="Auth\CustomJwtOptions.cs" />
+    <Compile Include="Auth\CustomOAuthOptions.cs" />
+    <Compile Include="Auth\CustomOAuthProvider.cs" />
+    <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Controllers\MembersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Event.cs" />
+    <Compile Include="Models\EventsDto.cs" />
+    <Compile Include="Models\GroupDto.cs" />
+    <Compile Include="Models\MeetupResponse.cs" />
+    <Compile Include="Models\Member.cs" />
+    <Compile Include="Models\Membership.cs" />
+    <Compile Include="Models\ProfilesDto.cs" />
+    <Compile Include="Models\RsvpDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
