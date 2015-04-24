@@ -204,6 +204,10 @@
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\application\app.js" />
+    <Content Include="Scripts\application\EventService.js" />
+    <Content Include="Scripts\application\MemberListCtrl.js" />
+    <Content Include="Scripts\application\MemberService.js" />
+    <Content Include="Scripts\application\UserService.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
