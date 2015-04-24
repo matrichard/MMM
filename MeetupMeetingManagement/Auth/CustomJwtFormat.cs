@@ -6,9 +6,15 @@ namespace MeetupMeetingManagement.Auth
 {
     public class CustomJwtFormat : ISecureDataFormat<AuthenticationTicket>
     {
-        public string SignatureAlgorithm => "http://www.w3.org/2001/04/xmldsig-more#hmac-sha256";
+        public string SignatureAlgorithm
+        {
+            get { return "http://www.w3.org/2001/04/xmldsig-more#hmac-sha256"; }
+        }
 
-        public string DigestAlgorithm => "http://www.w3.org/2001/04/xmlenc#sha256";
+        public string DigestAlgorithm
+        {
+            get { return "http://www.w3.org/2001/04/xmlenc#sha256"; }
+        }
 
         public string Protect(AuthenticationTicket data)
         {
